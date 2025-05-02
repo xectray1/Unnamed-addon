@@ -19,6 +19,16 @@ local framework = {
 
 local extrasTab = api:AddTab("extras")
 
+do
+    local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
+    
+    creditsGroup:AddLabel(
+        'Script by: findfirstparent\n' ..
+        'Contributors: envert, zpql, kiralyom\n' ..
+        'I did not make this with love nga start having fun', true
+    )
+end
+
 local antiSitGroup = extrasTab:AddLeftGroupbox("Anti-Sit")
 local antiSitToggle = antiSitGroup:AddToggle("anti_sit", {
     Text = "Anti-Sit",
