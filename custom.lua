@@ -103,7 +103,8 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
 end))
 
 do
-    local group = extrasTab:AddLeftGroupbox("Activity Logs")
+    local group = miscGroup 
+
     local joinConn, leaveConn = nil, nil
 
     group:AddToggle("logs_toggle", {
@@ -122,7 +123,7 @@ do
                     Default = 3,
                     Min = 0.5,
                     Max = 10,
-                    Rounding = 1, 
+                    Rounding = 1,
                     Suffix = "s"
                 })
                 joinConn = Players.PlayerAdded:Connect(function(p)
@@ -603,19 +604,31 @@ tpGroup:AddInput("PlayerSearchBox", {
     Numeric = false,
     Finished = true,
     Text = "Search Player",
-    Tooltip = "Type the name of a player and press Enter to select them",
-    Placeholder = "Enter player name",
+    Tooltip = "Type the name or display name of a player and press Enter to select them",
+    Placeholder = "Enter name or display name",
     Callback = function(value)
         local trimmed = value:lower():gsub("^%s*(.-)%s*$", "%1")
-        for _, playerName in ipairs(getPlayers()) do
-            if playerName:lower():sub(1, #trimmed) == trimmed then
-                selectedPlayer = playerName
-                searchResultLabel:SetText("Selected: " .. selectedPlayer)
-                return
+        local match = nil
+
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then
+                local displayName = p.DisplayName:lower()
+                local username = p.Name:lower()
+
+                if displayName:sub(1, #trimmed) == trimmed or username:sub(1, #trimmed) == trimmed then
+                    match = p.Name 
+                    break
+                end
             end
         end
-        selectedPlayer = nil
-        searchResultLabel:SetText("Selected: No match")
+
+        if match then
+            selectedPlayer = match
+            searchResultLabel:SetText("Selected: " .. selectedPlayer)
+        else
+            selectedPlayer = nil
+            searchResultLabel:SetText("Selected: No match")
+        end
     end
 })
 
@@ -651,6 +664,55 @@ Players.PlayerRemoving:Connect(function()
     refreshPlayerList()
 end)
 
+local group = extrasTab:AddRightGroupbox("Character")
+
+group:AddToggle("no_jump_cd", {
+    Text = "No Jump Cooldown",
+    Default = false
+})
+
+table.insert(framework.connections, RunService.Heartbeat:Connect(function()
+    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if Toggles.no_jump_cd and Toggles.no_jump_cd.Value then
+            if hum.UseJumpPower ~= false then
+                hum.UseJumpPower = false 
+            end
+        else
+            if hum.UseJumpPower ~= true then
+                hum.UseJumpPower = true 
+            end
+        end
+    end
+end))
+
+local lastDeathPosition = nil
+
+local function trackCharacter(char)
+    local hum = char:WaitForChild("Humanoid")
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    hum.StateChanged:Connect(function(_, newState)
+        if newState == Enum.HumanoidStateType.Dead and hrp then
+            lastDeathPosition = hrp.Position
+        end
+    end)
+end
+
+if LocalPlayer.Character then
+    trackCharacter(LocalPlayer.Character)
+end
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    trackCharacter(char)
+end)
+
+group:AddButton("Flashback", function()
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if hrp and lastDeathPosition then
+        hrp.CFrame = CFrame.new(lastDeathPosition + Vector3.new(0, 5, 0))
+    end
+end)
 
 local multiToolGroup = extrasTab:AddRightGroupbox("Multi tool")
 
