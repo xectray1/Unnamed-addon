@@ -102,6 +102,45 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
     end
 end))
 
+do
+    local group = extrasTab:AddLeftGroupbox("Activity Logs")
+    local joinConn, leaveConn = nil, nil
+
+    group:AddToggle("logs_toggle", {
+        Text = "Enable Logs",
+        Default = false,
+        Callback = function(enabled)
+            if enabled then
+                group:AddInput("notify_text", {
+                    Text = "Notification Text",
+                    Default = "{NAME} has {ACTIVITY} the game.",
+                    Placeholder = "ex: {NAME}, {ACTIVITY}",
+                    Finished = true
+                })
+                group:AddSlider("notify_duration", {
+                    Text = "Notify Duration",
+                    Default = 3,
+                    Min = 0.5,
+                    Max = 10,
+                    Rounding = 1, 
+                    Suffix = "s"
+                })
+                joinConn = Players.PlayerAdded:Connect(function(p)
+                    api:Notify(Options.notify_text.Value:gsub("{NAME}", p.Name):gsub("{ACTIVITY}", "joined"), Options.notify_duration.Value)
+                end)
+                leaveConn = Players.PlayerRemoving:Connect(function(p)
+                    api:Notify(Options.notify_text.Value:gsub("{NAME}", p.Name):gsub("{ACTIVITY}", "left"), Options.notify_duration.Value)
+                end)
+                table.insert(framework.connections, joinConn)
+                table.insert(framework.connections, leaveConn)
+            else
+                if joinConn then joinConn:Disconnect() end
+                if leaveConn then leaveConn:Disconnect() end
+            end
+        end
+    })
+end
+
 miscGroup:AddToggle("anti_fling", {
     Text = "Anti-Fling",
     Default = false,
