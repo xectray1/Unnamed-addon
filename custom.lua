@@ -1,4 +1,4 @@
-local api = getfenv().api or {}
+local api = ...
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -18,16 +18,6 @@ local framework = {
 }
 
 local extrasTab = api:AddTab("extras")
-
-do
-    local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
-    
-    creditsGroup:AddLabel(
-        'Script by: findfirstparent\n' ..
-        'Contributors: envert, zpql, kiralyom\n' ..
-        'I did not make this with love nga start having fun', true
-    )
-end
 
 local antiSitGroup = extrasTab:AddLeftGroupbox("Anti-Sit")
 local antiSitToggle = antiSitGroup:AddToggle("anti_sit", {
@@ -746,6 +736,104 @@ local function isRagebotActive()
     return getgenv().ragebotActive or false
 end
 
+local function equipAllAllowedTools()
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    for _, tool in ipairs(LocalPlayer.Backpack:GetChildren()) do
+        if tool:IsA("Tool") and allowedTools[tool.Name] then
+            tool.Parent = char
+            table.insert(framework.equippedTools, tool)
+        end
+    end
+
+    preciseSort()
+end
+
+local function equipRemainingAllowedTools()
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local hasEquipped = false
+    for _, tool in ipairs(char:GetChildren()) do
+        if tool:IsA("Tool") and allowedTools[tool.Name] then
+            hasEquipped = true
+            break
+        end
+    end
+
+    if hasEquipped then
+        for _, tool in ipairs(LocalPlayer.Backpack:GetChildren()) do
+            if tool:IsA("Tool") and allowedTools[tool.Name] then
+                tool.Parent = char
+                table.insert(framework.equippedTools, tool)
+            end
+        end
+    end
+
+    preciseSort()
+end
+
+local function unequipAllTools()
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    for _, tool in ipairs(char:GetChildren()) do
+        if tool:IsA("Tool") then
+            tool.Parent = LocalPlayer.Backpack
+        end
+    end
+
+    table.clear(framework.equippedTools)
+end
+
+local function preciseSort()
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    if not backpack then return end
+
+    local tools = {}
+    for _, item in ipairs(backpack:GetChildren()) do
+        if item:IsA("Tool") then table.insert(tools, item) end
+    end
+
+    local temp = Instance.new("Folder")
+    temp.Name = "TempInventory"
+    temp.Parent = workspace
+    for _, tool in ipairs(tools) do
+        tool.Parent = temp
+    end
+    task.wait(0.2)
+
+    local slotList = {
+        "[AUG]",
+        "[Rifle]",
+        "[Double-Barrel SG]"
+    }
+
+    local used = {}
+    for _, name in ipairs(slotList) do
+        for _, tool in ipairs(tools) do
+            if tool.Parent == temp and not used[tool] then
+                local lname = string.lower(tool.Name)
+                local match = lname == string.lower(name)
+                if match then
+                    tool.Parent = backpack
+                    used[tool] = true
+                    break
+                end
+            end
+        end
+    end
+
+    for _, tool in ipairs(tools) do
+        if tool.Parent == temp then
+            tool.Parent = backpack
+        end
+    end
+
+    temp:Destroy()
+end
+
 multiToolGroup:AddToggle("multi_tool_toggle", {
     Text = "Multi Tool",
     Default = true,
@@ -756,7 +844,7 @@ multiToolGroup:AddToggle("multi_tool_toggle", {
 
         if not (framework.ragebotActive or isRagebotActive()) then
             framework.multiToolActive = toggle.Value
-        else
+            else
             toggle.Value = false
             framework.multiToolActive = false
         end
@@ -776,65 +864,16 @@ multiToolGroup:AddLabel("Toggle Key"):AddKeyPicker("char_multi_tool_keybind", {
             framework.multiToolActive = false
             local toggle = Toggles.multi_tool_toggle
             if toggle then toggle.Value = false end
-
-            for _, tool in ipairs(LocalPlayer.Character:GetChildren()) do
-                if tool:IsA("Tool") then
-                    tool.Parent = LocalPlayer.Backpack
-                end
-            end
+            unequipAllTools()
         else
             if keybind.Mode == "Toggle" then
                 framework.multiToolActive = not framework.multiToolActive
                 local toggle = Toggles.multi_tool_toggle
                 if toggle then toggle.Value = framework.multiToolActive end
+                end
             end
         end
-    end
 })
-
-local function equipAndTrackTools()
-    local char = LocalPlayer.Character
-    if not char then return end
-
-    for _, tool in ipairs(LocalPlayer.Backpack:GetChildren()) do
-        if tool:IsA("Tool") and allowedTools[tool.Name] and tool.Parent ~= char then
-            tool.Parent = char
-        end
-    end
-
-    table.clear(framework.equippedTools)
-    for _, tool in ipairs(char:GetChildren()) do
-        if tool:IsA("Tool") and allowedTools[tool.Name] then
-            table.insert(framework.equippedTools, tool)
-        end
-    end
-end
-
-local lastFiredTimes = {}
-local TOOL_FIRE_DELAY = {
-    ["[Rifle]"] = 0.3,
-    ["[Double-Barrel SG]"] = 0.3,
-    ["[AUG]"] = 0
-}
-
-local function simulateShooting(tool)
-    if tool:IsA("Tool") then
-        local clickDetector = tool:FindFirstChildOfClass("ClickDetector")
-        if clickDetector then
-            pcall(function()
-                clickDetector.MouseClick:Fire()
-            end)
-        else
-            pcall(function()
-                if tool.Activate then
-                    tool:Activate()
-                end
-            end)
-        end
-    end
-end
-
-local lastEquipTime = tick()
 
 task.spawn(function()
     while true do
@@ -851,11 +890,7 @@ task.spawn(function()
 
             if not framework.toolsUnequippedForRagebot then
                 framework.toolsUnequippedForRagebot = true
-                for _, tool in ipairs(LocalPlayer.Character:GetChildren()) do
-                    if tool:IsA("Tool") then
-                        tool.Parent = LocalPlayer.Backpack
-                    end
-                end
+                unequipAllTools()
             end
         elseif not rageActive and framework.ragebotActive then
             framework.ragebotActive = false
@@ -863,12 +898,69 @@ task.spawn(function()
 
             if Toggles.multi_tool_toggle and Toggles.multi_tool_toggle.Value then
                 framework.multiToolActive = true
+                equipAllAllowedTools()
             end
         end
 
         task.wait(0.1)
     end
 end)
+
+table.insert(framework.connections, LocalPlayer.Character.ChildAdded:Connect(function(child)
+    if not framework.multiToolActive then return end
+    if child:IsA("Tool") and allowedTools[child.Name] then
+        equipRemainingAllowedTools()
+    end
+end))
+
+table.insert(framework.connections, LocalPlayer.Character.ChildRemoved:Connect(function(child)
+    if child:IsA("Tool") and allowedTools[child.Name] then
+        for i, tool in ipairs(framework.equippedTools) do
+            if tool == child then
+                table.remove(framework.equippedTools, i)
+                break
+            end
+        end
+    end
+end))
+
+local lastFiredTimes = {}
+local TOOL_FIRE_DELAY = {
+    ["[Rifle]"] = 0.3,
+    ["[Double-Barrel SG]"] = 0.3,
+    ["[AUG]"] = 0
+}
+
+local function simulateShooting(tool)
+    if tool:IsA("Tool") then
+        pcall(function()
+            if tool:FindFirstChildOfClass("ClickDetector") then
+                tool:FindFirstChildOfClass("ClickDetector").MouseClick:Fire()
+            elseif tool.Activate then
+                tool:Activate()
+            end
+        end)
+    end
+end
+
+local isShooting = false
+
+local function startAutoShooting()
+    local now = tick()
+    for _, tool in ipairs(framework.equippedTools) do
+        if tool and tool.Parent == LocalPlayer.Character then
+            local delay = TOOL_FIRE_DELAY[tool.Name] or 0.2
+            if now - (lastFiredTimes[tool] or 0) >= delay then
+                lastFiredTimes[tool] = now
+                simulateShooting(tool)
+            end
+        end
+    end
+end
+
+local function stopAutoShooting()
+    lastFiredTimes = {}
+end
 
 table.insert(framework.connections, RunService.RenderStepped:Connect(function()
     if framework.ragebotActive or isRagebotActive() then return end
@@ -886,39 +978,26 @@ table.insert(framework.connections, RunService.RenderStepped:Connect(function()
         active = framework.multiToolActive
     end
 
-    if not active then return end
-
-    equipAndTrackTools()
-    local now = tick()
-
-    if now - lastEquipTime >= 0.5 then
-        for _, tool in ipairs(framework.equippedTools) do
-            if tool and tool.Parent == LocalPlayer.Character then
-                tool.Parent = LocalPlayer.Backpack
-            end
+    if active then
+        if not isShooting then
+            isShooting = true
+            startAutoShooting()
         end
-        equipAndTrackTools()
-        lastEquipTime = now
-    end
-
-    for _, tool in ipairs(framework.equippedTools) do
-        if tool and tool.Parent == LocalPlayer.Character then
-            local delay = TOOL_FIRE_DELAY[tool.Name] or 0.2
-            if now - (lastFiredTimes[tool] or 0) >= delay then
-                lastFiredTimes[tool] = now
-                simulateShooting(tool)
-            end
+    else
+        if isShooting then
+            isShooting = false
+            stopAutoShooting()
         end
     end
 end))
 
-local equippedToolsBackup = {}
-
-for _, tool in ipairs(LocalPlayer.Character:GetChildren()) do
-    if tool:IsA("Tool") then
-        table.insert(equippedToolsBackup, tool)
+table.insert(framework.connections, game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isShooting = true
+        startAutoShooting()
     end
-end
+end))
 
 function api:Unload()
     for _, connection in pairs(framework.connections) do
