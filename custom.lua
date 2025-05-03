@@ -674,15 +674,6 @@ Players.PlayerRemoving:Connect(function()
     refreshPlayerList()
 end)
 
-tpGroup:AddButton("Enable All Ragebot Toggles", function()
-    for name, toggle in pairs(Toggles) do
-        if name:lower():find("ragebot") and typeof(toggle) == "table" and toggle.Value ~= nil then
-            toggle.Value = true
-        end
-    end
-
-    api:notify("Ragebot", "All ragebot toggles enabled.", 3)
-end)
 
 local group = extrasTab:AddRightGroupbox("Character")
 
@@ -733,6 +724,173 @@ group:AddButton("Flashback", function()
         hrp.CFrame = CFrame.new(lastDeathPosition + Vector3.new(0, 5, 0))
     end
 end)
+
+group:AddButton("Animation pack", function()
+
+    repeat
+        wait()
+    until game:IsLoaded()
+        and game.Players.LocalPlayer.Character:FindFirstChild("FULLY_LOADED_CHAR")
+        and game.Players.LocalPlayer.PlayerGui.MainScreenGui:FindFirstChild("AnimationPack")
+        and game.Players.LocalPlayer.PlayerGui.MainScreenGui:FindFirstChild("AnimationPlusPack")
+
+    local Animations = game.ReplicatedStorage:WaitForChild("ClientAnimations")
+
+    local anims = {
+        "Lean", "Lay", "Dance1", "Dance2", "Greet", "Chest Pump", "Praying",
+        "TheDefault", "Sturdy", "Rossy", "Griddy", "TPose", "SpeedBlitz"
+    }
+    for _, name in ipairs(anims) do
+        local a = Animations:FindFirstChild(name)
+        if a then a:Destroy() end
+    end
+
+    local function newAnim(name, id)
+        local a = Instance.new("Animation", Animations)
+        a.Name = name
+        a.AnimationId = "rbxassetid://" .. id
+        return a
+    end
+
+    local LeanAnimation = newAnim("Lean", "3152375249")
+    local LayAnimation = newAnim("Lay", "3152378852")
+    local Dance1Animation = newAnim("Dance1", "3189773368")
+    local Dance2Animation = newAnim("Dance2", "3189776546")
+    local GreetAnimation = newAnim("Greet", "3189777795")
+    local ChestPumpAnimation = newAnim("Chest Pump", "3189779152")
+    local PrayingAnimation = newAnim("Praying", "3487719500")
+    local TheDefaultAnimation = newAnim("TheDefault", "11710529975")
+    local SturdyAnimation = newAnim("Sturdy", "11710524717")
+    local RossyAnimation = newAnim("Rossy", "11710527244")
+    local GriddyAnimation = newAnim("Griddy", "11710529220")
+    local TPoseAnimation = newAnim("TPose", "11710524200")
+    local SpeedBlitzAnimation = newAnim("SpeedBlitz", "11710541744")
+
+    function AnimationPack(Character)
+        Character:WaitForChild("Humanoid")
+        repeat wait() until Character:FindFirstChild("FULLY_LOADED_CHAR")
+            and game.Players.LocalPlayer.PlayerGui.MainScreenGui:FindFirstChild("AnimationPack")
+            and game.Players.LocalPlayer.PlayerGui.MainScreenGui:FindFirstChild("AnimationPlusPack")
+
+        local Player = game.Players.LocalPlayer
+        local Humanoid = Character.Humanoid
+        local AnimationPack = Player.PlayerGui.MainScreenGui.AnimationPack
+        local AnimationPackPlus = Player.PlayerGui.MainScreenGui.AnimationPlusPack
+        local ScrollingFrame = AnimationPack.ScrollingFrame
+        local CloseButton = AnimationPack.CloseButton
+        local ScrollingFramePlus = AnimationPackPlus.ScrollingFrame
+        local CloseButtonPlus = AnimationPackPlus.CloseButton
+
+        local animations = {
+            Lean = Humanoid:LoadAnimation(LeanAnimation),
+            Lay = Humanoid:LoadAnimation(LayAnimation),
+            Dance1 = Humanoid:LoadAnimation(Dance1Animation),
+            Dance2 = Humanoid:LoadAnimation(Dance2Animation),
+            Greet = Humanoid:LoadAnimation(GreetAnimation),
+            ChestPump = Humanoid:LoadAnimation(ChestPumpAnimation),
+            Praying = Humanoid:LoadAnimation(PrayingAnimation),
+            TheDefault = Humanoid:LoadAnimation(TheDefaultAnimation),
+            Sturdy = Humanoid:LoadAnimation(SturdyAnimation),
+            Rossy = Humanoid:LoadAnimation(RossyAnimation),
+            Griddy = Humanoid:LoadAnimation(GriddyAnimation),
+            TPose = Humanoid:LoadAnimation(TPoseAnimation),
+            SpeedBlitz = Humanoid:LoadAnimation(SpeedBlitzAnimation)
+        }
+
+        AnimationPack.Visible = true
+        AnimationPackPlus.Visible = true
+        ScrollingFrame.UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        ScrollingFramePlus.UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+        local function renameButtons(frame, renameMap)
+            for _, btn in pairs(frame:GetChildren()) do
+                if btn:IsA("TextButton") and renameMap[btn.Text] then
+                    btn.Name = renameMap[btn.Text]
+                end
+            end
+        end
+
+        renameButtons(ScrollingFrame, {
+            ["Lean"] = "LeanButton",
+            ["Lay"] = "LayButton",
+            ["Dance1"] = "Dance1Button",
+            ["Dance2"] = "Dance2Button",
+            ["Greet"] = "GreetButton",
+            ["Chest Pump"] = "ChestPumpButton",
+            ["Praying"] = "PrayingButton",
+        })
+
+        renameButtons(ScrollingFramePlus, {
+            ["The Default"] = "TheDefaultButton",
+            ["Sturdy"] = "SturdyButton",
+            ["Rossy"] = "RossyButton",
+            ["Griddy"] = "GriddyButton",
+            ["T Pose"] = "TPoseButton",
+            ["Speed Blitz"] = "SpeedBlitzButton",
+        })
+
+        local function StopAll()
+            for _, anim in pairs(animations) do anim:Stop() end
+        end
+
+        local function connectButton(buttonName, animKey, parent)
+            local btn = parent:FindFirstChild(buttonName)
+            if btn then
+                btn.MouseButton1Click:Connect(function()
+                    StopAll()
+                    animations[animKey]:Play()
+                end)
+            end
+        end
+
+        connectButton("LeanButton", "Lean", ScrollingFrame)
+        connectButton("LayButton", "Lay", ScrollingFrame)
+        connectButton("Dance1Button", "Dance1", ScrollingFrame)
+        connectButton("Dance2Button", "Dance2", ScrollingFrame)
+        connectButton("GreetButton", "Greet", ScrollingFrame)
+        connectButton("ChestPumpButton", "ChestPump", ScrollingFrame)
+        connectButton("PrayingButton", "Praying", ScrollingFrame)
+
+        connectButton("TheDefaultButton", "TheDefault", ScrollingFramePlus)
+        connectButton("SturdyButton", "Sturdy", ScrollingFramePlus)
+        connectButton("RossyButton", "Rossy", ScrollingFramePlus)
+        connectButton("GriddyButton", "Griddy", ScrollingFramePlus)
+        connectButton("TPoseButton", "TPose", ScrollingFramePlus)
+        connectButton("SpeedBlitzButton", "SpeedBlitz", ScrollingFramePlus)
+
+        AnimationPack.MouseButton1Click:Connect(function()
+            ScrollingFrame.Visible = true
+            CloseButton.Visible = true
+            AnimationPackPlus.Visible = false
+        end)
+
+        AnimationPackPlus.MouseButton1Click:Connect(function()
+            ScrollingFramePlus.Visible = true
+            CloseButtonPlus.Visible = true
+            AnimationPack.Visible = false
+        end)
+
+        CloseButton.MouseButton1Click:Connect(function()
+            ScrollingFrame.Visible = false
+            CloseButton.Visible = false
+            AnimationPackPlus.Visible = true
+        end)
+
+        CloseButtonPlus.MouseButton1Click:Connect(function()
+            ScrollingFramePlus.Visible = false
+            CloseButtonPlus.Visible = false
+            AnimationPack.Visible = true
+        end)
+
+        Humanoid.Running:Connect(StopAll)
+        game.Players.LocalPlayer.CharacterAdded:Connect(StopAll)
+    end
+
+    AnimationPack(game.Players.LocalPlayer.Character)
+    game.Players.LocalPlayer.CharacterAdded:Connect(AnimationPack)
+
+end)
+
 
 local multiToolGroup = extrasTab:AddRightGroupbox("Multi tool")
 
