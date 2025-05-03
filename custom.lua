@@ -19,6 +19,16 @@ local framework = {
 
 local extrasTab = api:AddTab("extras")
 
+do
+    local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
+    
+    creditsGroup:AddLabel(
+        'Script by: findfirstparent\n' ..
+        'Contributors: envert, zpql, kiralyom\n' ..
+        'I did not make this with love nga start having fun', true
+    )
+end
+
 local antiSitGroup = extrasTab:AddLeftGroupbox("Anti-Sit")
 local antiSitToggle = antiSitGroup:AddToggle("anti_sit", {
     Text = "Anti-Sit",
@@ -662,6 +672,16 @@ end)
 Players.PlayerRemoving:Connect(function()
     task.wait(0.1)
     refreshPlayerList()
+end)
+
+tpGroup:AddButton("Enable All Ragebot Toggles", function()
+    for name, toggle in pairs(Toggles) do
+        if name:lower():find("ragebot") and typeof(toggle) == "table" and toggle.Value ~= nil then
+            toggle.Value = true
+        end
+    end
+
+    api:notify("Ragebot", "All ragebot toggles enabled.", 3)
 end)
 
 local group = extrasTab:AddRightGroupbox("Character")
