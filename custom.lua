@@ -393,29 +393,38 @@ do
         return (Launcher.Position - HRP.Position).Magnitude < 16
     end
 
-    local function GetLauncherImpactPosition()
-        local Launcher = GetLauncher()
-        if not Launcher then return end
-        return Launcher.Position + (Launcher.CFrame.LookVector * 10)
-    end
+    local lastPosition = nil
+    local isVoided = false
+    local voidDebounce = false
 
-    local function TeleportBehindImpact(impactPosition)
-        local HRP = LocalPlayer.Character and find_first_child(LocalPlayer.Character, "HumanoidRootPart")
-        if not HRP then return end
-
-        local direction = (impactPosition - HRP.Position).Unit
-        local targetPosition = HRP.Position + (direction * 20)
-        HRP.CFrame = CFrame.new(targetPosition)
+    local function VoidCharacter()
+        if voidDebounce then return end
+        voidDebounce = true
+        
+        local char = LocalPlayer.Character
+        local hrp = char and find_first_child(char, "HumanoidRootPart")
+        if not hrp then return end
+        
+        lastPosition = hrp.CFrame
+        hrp.CFrame = CFrame.new(0, -10000, 0) 
+        isVoided = true
+        
+        task.delay(1, function()
+            if char and char:FindFirstChild("HumanoidRootPart") and lastPosition then
+                char.HumanoidRootPart.CFrame = lastPosition
+            end
+            isVoided = false
+            task.delay(0.5, function()
+                voidDebounce = false
+            end)
+        end)
     end
 
     table.insert(framework.connections, RunService.Heartbeat:Connect(function()
         if not framework.antiRpgActive then return end
 
-        if IsLauncherNear() then
-            local impactPosition = GetLauncherImpactPosition()
-            if impactPosition then
-                TeleportBehindImpact(impactPosition)
-            end
+        if IsLauncherNear() and not isVoided then
+            VoidCharacter()
         end
     end))
 end
@@ -1201,4 +1210,3 @@ function api:Unload()
         Toggles.multi_tool_toggle.Value = false
     end
 end
--- created by hvhgui/createremotethread, envert and unnamed toggle variables provided by ender
