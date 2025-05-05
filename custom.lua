@@ -37,7 +37,7 @@ do
         '[~] improved anti rpg\n' ..
         '[+] animation packs\n' ..
 	'[~] you can now manually shoot with multi tool\n' ..
-	'i am not adding E SEX!.. send me some suggestions in dms, i will read them', true
+	'send me some suggestions in dms, i will read them @findfirstparent on discord', true
     )
 end
 
