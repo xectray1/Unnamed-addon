@@ -24,7 +24,7 @@ do
     
     creditsGroup:AddLabel(
         'Script by: findfirstparent\n' ..
-        'Contributors: envert, zpql, kiralyom, kx6v\n' ..
+        'Contributors: envert, zpql, kiralyom\n' ..
         'I did not make this with love nga start having fun', true
     )
 end
@@ -390,7 +390,7 @@ do
         local Launcher = GetLauncher()
 
         if not HRP or not Launcher then return false end
-        return (Launcher.Position - HRP.Position).Magnitude < 16
+        return (Launcher.Position - HRP.Position).Magnitude < 20
     end
 
     local lastPosition = nil
