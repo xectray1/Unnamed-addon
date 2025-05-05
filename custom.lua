@@ -24,7 +24,7 @@ do
     
     creditsGroup:AddLabel(
         'Script by: findfirstparent\n' ..
-        'Contributors: envert, zpql, kiralyom\n' ..
+        'Contributors: envert, zpql, kiralyom, kx6v\n' ..
         'I did not make this with love nga start having fun', true
     )
 end
@@ -1190,23 +1190,59 @@ function api:Unload()
     for _, connection in pairs(framework.connections) do
         pcall(function() connection:Disconnect() end)
     end
+    table.clear(framework.connections)
 
-    for _, tool in ipairs(LocalPlayer.Character:GetChildren()) do
-        if tool:IsA("Tool") then
-            tool.Parent = LocalPlayer.Backpack
+    for _, toggle in pairs(Toggles) do
+        if toggle.Name and (
+            toggle.Name == "anti_sit" or
+            toggle.Name == "god_block" or
+            toggle.Name == "logs_toggle" or
+            toggle.Name == "anti_fling" or
+            toggle.Name == "jerk_toggle" or
+            toggle.Name == "autotrash_e" or
+            toggle.Name == "anti_rpg" or
+            toggle.Name == "sort_toggle" or
+            toggle.Name == "char_spin" or
+            toggle.Name == "no_jump_cd" or
+            toggle.Name == "multi_tool_toggle"
+        ) then
+            toggle.Value = false
         end
     end
 
-    table.clear(framework.equippedTools)
-
     framework.multiToolActive = false
-    framework.ragebotActive = false
-    framework.toolsUnequippedForRagebot = false
     framework.spinActive = false
     framework.antiSitActive = false
     framework.antiFlingActive = false
+    framework.antiRpgActive = false
+    framework.isHoldingKey = false
 
-    if Toggles.multi_tool_toggle then
-        Toggles.multi_tool_toggle.Value = false
+    if LocalPlayer.Character then
+        local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
+        if humanoid then
+            if framework.spinActive then humanoid.AutoRotate = true end
+            if framework.antiSitActive then humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true) end
+        end
+    end
+
+    lastPosition = nil
+    isVoided = false
+    voidDebounce = false
+    isShooting = false
+    table.clear(framework.equippedTools)
+    table.clear(lastFiredTimes)
+    
+    if framework.antiFlingActive then
+        for player, parts in pairs(originalCollisions) do
+            if player and player.Character then
+                for part, properties in pairs(parts) do
+                    if part and part:IsA("BasePart") then
+                        part.CanCollide = properties.CanCollide
+                        if part.Name == "Torso" then part.Massless = properties.Massless end
+                    end
+                end
+            end
+        end
+        table.clear(originalCollisions)
     end
 end
