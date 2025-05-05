@@ -37,6 +37,11 @@ do
         '[~] improved anti rpg\n' ..
         '[+] animation packs\n' ..
 	'[~] you can now manually shoot with multi tool\n' ..
+	'[+] no jump cooldown\n' ..
+	'[+] flashback (teleport back to where you died)\n' ..
+	'[~] you can now type in users in teleport to player\n' ..
+	'[~] unloading script now fully killswitches all enabled functions\n' ..
+	'might add roblox animation packs soon\n' ..
 	'send me some suggestions in dms, i will read them @findfirstparent on discord', true
     )
 end
