@@ -29,6 +29,18 @@ do
     )
 end
 
+do
+    local updatesGroup = extrasTab:AddRightGroupbox("Update logs")
+    
+    updatesGroup:AddLabel(
+        'Update logs:\n' ..
+        '[~] improved anti rpg\n' ..
+        '[+] animation packs\n' ..
+	'[~] you can now manually shoot with multi tool\n' ..
+	'i am not adding E SEX!.. send me some suggestions in dms, i will read them', true
+    )
+end
+
 local antiSitGroup = extrasTab:AddLeftGroupbox("Anti-Sit")
 local antiSitToggle = antiSitGroup:AddToggle("anti_sit", {
     Text = "Anti-Sit",
