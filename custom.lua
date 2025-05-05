@@ -41,7 +41,7 @@ do
 	'[+] flashback (teleport back to where you died)\n' ..
 	'[~] you can now type in users in teleport to player\n' ..
 	'[~] unloading script now fully killswitches all enabled functions\n' ..
-	'might add roblox animation packs soon\n' ..
+	'SEX GRAB IS COMING 😱\n' ..
 	'send me some suggestions in dms, i will read them @findfirstparent on discord', true
     )
 end
