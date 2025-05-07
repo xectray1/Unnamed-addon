@@ -36,7 +36,8 @@ do
     updatesGroup:AddLabel(
         'Update logs:\n' ..
 	'[~] fixed multi tool breaking upon respawn\n' ..
-	'send me some suggestions in dms, i will read them @findfirstparent on discord', true
+	'[~] REMEMBER you can now manually shoot and equip with multi tool\n' ..
+	'Find any bugs? dm me. Have any suggestions? @findfirsrparent on discord', true
     )
 end
 
