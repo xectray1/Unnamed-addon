@@ -6,6 +6,7 @@ local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ChatService = game:GetService("Chat")
 local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 local Heartbeat = RunService.Heartbeat
 
 local framework = {
@@ -34,14 +35,7 @@ do
     
     updatesGroup:AddLabel(
         'Update logs:\n' ..
-        '[~] improved anti rpg\n' ..
-        '[+] animation packs\n' ..
-	'[~] you can now manually shoot with multi tool\n' ..
-	'[+] no jump cooldown\n' ..
-	'[+] flashback (teleport back to where you died)\n' ..
-	'[~] you can now type in users in teleport to player\n' ..
-	'[~] unloading script now fully killswitches all enabled functions\n' ..
-	'sex grab not coming beccause theres lil kids including you\n' ..
+	'[~] fixed multi tool breaking upon respawn\n' ..
 	'send me some suggestions in dms, i will read them @findfirstparent on discord', true
     )
 end
@@ -1110,23 +1104,40 @@ task.spawn(function()
     end
 end)
 
-table.insert(framework.connections, LocalPlayer.Character.ChildAdded:Connect(function(child)
-    if not framework.multiToolActive then return end
-    if child:IsA("Tool") and allowedTools[child.Name] then
-        equipRemainingAllowedTools()
-    end
-end))
-
-table.insert(framework.connections, LocalPlayer.Character.ChildRemoved:Connect(function(child)
-    if child:IsA("Tool") and allowedTools[child.Name] then
-        for i, tool in ipairs(framework.equippedTools) do
-            if tool == child then
-                table.remove(framework.equippedTools, i)
-                break
-            end
+local function bindCharacterToolEvents(char)
+    for i, conn in ipairs(framework.connections) do
+        if conn.Connected == false then
+            table.remove(framework.connections, i)
         end
     end
-end))
+
+    table.insert(framework.connections, char.ChildAdded:Connect(function(child)
+        if not framework.multiToolActive then return end
+        if child:IsA("Tool") and allowedTools[child.Name] then
+            equipRemainingAllowedTools()
+        end
+    end))
+
+    table.insert(framework.connections, char.ChildRemoved:Connect(function(child)
+        if child:IsA("Tool") and allowedTools[child.Name] then
+            for i, tool in ipairs(framework.equippedTools) do
+                if tool == child then
+                    table.remove(framework.equippedTools, i)
+                    break
+                end
+            end
+        end
+    end))
+end
+
+if LocalPlayer.Character then
+    bindCharacterToolEvents(LocalPlayer.Character)
+end
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    task.wait(0.5)
+    bindCharacterToolEvents(char)
+end)
 
 local lastFiredTimes = {}
 local TOOL_FIRE_DELAY = {
@@ -1166,6 +1177,14 @@ local function stopAutoShooting()
     lastFiredTimes = {}
 end
 
+local function simulateReload()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.R, false, game)
+    task.wait(0.1)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.R, false, game)
+end
+
+local reloadCheckCooldown = 0
+
 table.insert(framework.connections, RunService.RenderStepped:Connect(function()
     if framework.ragebotActive or isRagebotActive() then return end
 
@@ -1192,6 +1211,17 @@ table.insert(framework.connections, RunService.RenderStepped:Connect(function()
             isShooting = false
             stopAutoShooting()
         end
+    end
+
+    local char = LocalPlayer.Character
+    if char and tick() >= reloadCheckCooldown then
+        for _, tool in ipairs(framework.equippedTools) do
+            if tool.Name == "[Double-Barrel SG]" and tool.Parent == char then
+                simulateReload()
+                break
+            end
+        end
+        reloadCheckCooldown = tick() + 5
     end
 end))
 
