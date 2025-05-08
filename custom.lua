@@ -24,7 +24,7 @@ do
     local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
     
     creditsGroup:AddLabel(
-        'Script by: findfirstparent\n' ..
+        'Script by: manualmapping\n' ..
         'Contributors: envert, zpql, kiralyom\n' ..
         'I did not make this with love nga start having fun', true
     )
