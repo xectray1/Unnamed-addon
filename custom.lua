@@ -37,7 +37,7 @@ do
         'Update logs:\n' ..
 	'[~] fixed multi tool breaking upon respawn\n' ..
 	'[~] REMEMBER you can now manually shoot and equip with multi tool\n' ..
-	'Find any bugs? dm me. Have any suggestions? @findfirsrparent on discord', true
+	'Find any bugs? dm me. Have any suggestions? @manualmapping on discord', true
     )
 end
 
