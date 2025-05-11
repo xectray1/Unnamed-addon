@@ -24,7 +24,7 @@ do
     local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
     
     creditsGroup:AddLabel(
-        'Script by: manualmapping\n' ..
+        'Script by: d5rxv\n' ..
         'Contributors: envert, zpql, kiralyom\n' ..
         'I did not make this with love nga start having fun', true
     )
@@ -37,7 +37,7 @@ do
         'Update logs:\n' ..
 	'[~] fixed multi tool breaking upon respawn\n' ..
 	'[~] REMEMBER you can now manually shoot and equip with multi tool\n' ..
-	'Find any bugs? dm me. Have any suggestions? @manualmapping on discord', true
+	'Find any bugs? dm me. Have any suggestions? @d5rxv on discord', true
     )
 end
 
