@@ -39,45 +39,11 @@ do
     updatesGroup:AddLabel(
         'Update logs:\n' ..
 	'[+] R6 Force\n' ..
-    '[+] Target HUD (causes fps drops)\n' ..
+    '[+] Target HUD\n' ..
+    '[~] organised anti sit toggle \n' ..
 	'Find any bugs? dm me. Have any suggestions? @d5rxv on discord', true
     )
 end
-
-local antiSitGroup = extrasTab:AddLeftGroupbox("Anti-Sit")
-local antiSitToggle = antiSitGroup:AddToggle("anti_sit", {
-    Text = "Anti-Sit",
-    Default = true,
-})
-
-antiSitToggle:OnChanged(function()
-    framework.antiSitActive = antiSitToggle.Value
-end)
-
-table.insert(framework.connections, RunService.Heartbeat:Connect(function()
-    if not framework.antiSitActive then return end
-
-    local char = LocalPlayer.Character
-    if not char then return end
-
-    local humanoid = char:FindFirstChild("Humanoid")
-    if not humanoid then return end
-
-    if humanoid:GetState() == Enum.HumanoidStateType.Seated then
-        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
-    end
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
-end))
-
-table.insert(framework.connections, RunService.Heartbeat:Connect(function()
-    if not framework.antiSitActive then
-        local char = LocalPlayer.Character
-        if not char then return end
-        local humanoid = char:FindFirstChild("Humanoid")
-        if not humanoid then return end
-        humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
-    end
-end))
 
 do
     local group = extrasTab:AddLeftGroupbox("Voice Chat")
@@ -124,6 +90,40 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
         if effects and effects:FindFirstChild("Block") then
             effects.Block:Destroy()
         end
+    end
+end))
+
+local antiSitToggle = miscGroup:AddToggle("anti_sit", {
+    Text = "Anti-Sit",
+    Default = true,
+})
+
+antiSitToggle:OnChanged(function()
+    framework.antiSitActive = antiSitToggle.Value
+end)
+
+table.insert(framework.connections, RunService.Heartbeat:Connect(function()
+    if not framework.antiSitActive then return end
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local humanoid = char:FindFirstChild("Humanoid")
+    if not humanoid then return end
+
+    if humanoid:GetState() == Enum.HumanoidStateType.Seated then
+        humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+    end
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+end))
+
+table.insert(framework.connections, RunService.Heartbeat:Connect(function()
+    if not framework.antiSitActive then
+        local char = LocalPlayer.Character
+        if not char then return end
+        local humanoid = char:FindFirstChild("Humanoid")
+        if not humanoid then return end
+        humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
     end
 end))
 
@@ -746,6 +746,7 @@ local miscGroup = extrasTab:AddLeftGroupbox("Visual Settings")
 
 framework.elements.enabled = miscGroup:AddToggle("target_hud_enabled", {
     Text = "Enable Target HUD",
+    Tooltip = "CAUSES FPS DROPS!",
     Default = false
 })
 
