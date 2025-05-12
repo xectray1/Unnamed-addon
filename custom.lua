@@ -746,7 +746,7 @@ local miscGroup = extrasTab:AddLeftGroupbox("Visual Settings")
 
 framework.elements.enabled = miscGroup:AddToggle("target_hud_enabled", {
     Text = "Enable Target HUD",
-    Default = true
+    Default = false
 })
 
 framework.elements.opacity = miscGroup:AddSlider("target_hud_opacity", {
