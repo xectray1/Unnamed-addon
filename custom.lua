@@ -20,7 +20,6 @@ local framework = {
     isHoldingKey = false
 }
 
-
 local extrasTab = api:AddTab("extras")
 
 do
@@ -29,7 +28,8 @@ do
     creditsGroup:AddLabel(
         'Script by: d5rxv\n' ..
         'Contributors: envert, zpql, kiralyom\n' ..
-        'I did not make this with love nga start having fun', true
+        'Testers: vibin_vibing, 109theone\n' ..
+        'I DID make this with love ❤❤', true
     )
 end
 
@@ -2047,7 +2047,8 @@ end
 local allowedTools = {
     ["[Rifle]"] = true,
     ["[Double-Barrel SG]"] = true,
-    ["[AUG]"] = true
+    ["[AUG]"] = true,
+    ["[Flintlock]"] = true
 }
 
 framework.ragebotActive = false
@@ -2131,7 +2132,8 @@ local function preciseSort()
     local slotList = {
         "[AUG]",
         "[Rifle]",
-        "[Double-Barrel SG]"
+        "[Double-Barrel SG]",
+        "[Flintlock]"
     }
 
     local used = {}
@@ -2269,7 +2271,8 @@ local lastFiredTimes = {}
 local TOOL_FIRE_DELAY = {
     ["[Rifle]"] = 0.3,
     ["[Double-Barrel SG]"] = 0.3,
-    ["[AUG]"] = 0
+    ["[AUG]"] = 0,
+    ["[Flintlock]"] = 1
 }
 
 local function simulateShooting(tool)
@@ -2358,6 +2361,20 @@ table.insert(framework.connections, game:GetService("UserInputService").InputBeg
         startAutoShooting()
     end
 end))
+
+local infoTab = api:AddTab("info")
+
+do
+    local infoGroup = infoTab:AddLeftGroupbox("Info")
+    
+    infoGroup:AddLabel(
+        'you can multi tool with AUG, Double barrel, rifle and flintlock\n' ..
+        'if you want a custom version of multi tool like additional weapons ect just dm me @d5rxv\n' ..
+        'not guts anymore\n' ..
+        'configs MIGHT come later idk\n' ..
+        'if you HAVENT seen target HUD causes fps drops if your device isnt good enough', true
+    )
+end
 
 function api:Unload()
     for _, connection in pairs(framework.connections) do
