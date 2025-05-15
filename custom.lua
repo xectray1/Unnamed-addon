@@ -26,7 +26,7 @@ do
     local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
     
     creditsGroup:AddLabel(
-        'Script by: d5rxv\n' ..
+        'Script by: gutsbiggestfan\n' ..
         'Contributors: envert, zpql, kiralyom\n' ..
         'Testers: vibin_vibing, 109theone, vinni300\n' ..
         'I DID make this with love ❤❤', true
@@ -2369,9 +2369,9 @@ do
     
     infoGroup:AddLabel(
         'you can multi tool with AUG, Double barrel, rifle and flintlock\n' ..
-        'if you want a custom version of multi tool like additional weapons ect just dm me @d5rxv\n' ..
+        'if you want a custom version of multi tool like additional weapons ect just dm me @gutsbiggestfan\n' ..
         'not guts anymore\n' ..
-        'configs MIGHT come later idk\n' ..
+        'discord banned my ass again\n' ..
         'if you HAVENT seen target HUD causes fps drops if your device isnt good enough', true
     )
 end
