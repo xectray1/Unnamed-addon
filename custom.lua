@@ -41,7 +41,7 @@ do
 	'[+] R6 Force\n' ..
     '[+] Target HUD\n' ..
     '[~] organised anti sit toggle \n' ..
-	'Find any bugs? dm me. Have any suggestions? @d5rxv on discord', true
+	'Find any bugs? dm me. Have any suggestions? @gutsbiggestfan on discord', true
     )
 end
 
