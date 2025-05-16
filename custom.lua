@@ -40,6 +40,7 @@ do
         'Update logs:\n' ..
 	'[+] save position\n' ..
     '[+] teleport to saved position\n' ..
+    '[+] copy join server script\n' ..
     '[~] lowkey priv9 target hud 🤤🤤\n' ..
 	'Find any bugs? dm me. Have any suggestions? @gutsbiggestfan on discord', true
     )
@@ -228,6 +229,17 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
     end
 end))
 
+miscGroup:AddButton("Copy join link", function()
+    local placeId = game.PlaceId  
+    local serverId = game.JobId  
+    
+    local joinScript = string.format("cloneref(game:GetService('TeleportService')):TeleportToPlaceInstance(%d, '%s', game.Players.LocalPlayer)", placeId, serverId)
+    
+    
+    setclipboard(joinScript)
+    
+    api:Notify("Copied server join script", 3);
+end)
 do
     local group = extrasTab:AddLeftGroupbox("Troll")
 
