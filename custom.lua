@@ -38,9 +38,9 @@ do
     
     updatesGroup:AddLabel(
         'Update logs:\n' ..
-	'[+] R6 Force\n' ..
-    '[+] Target HUD\n' ..
-    '[~] organised anti sit toggle \n' ..
+	'[+] save position\n' ..
+    '[+] teleport to saved position\n' ..
+    '[~] lowkey priv9 target hud 🤤🤤\n' ..
 	'Find any bugs? dm me. Have any suggestions? @gutsbiggestfan on discord', true
     )
 end
@@ -133,8 +133,9 @@ do
     local joinConn, leaveConn = nil, nil
 
     group:AddToggle("logs_toggle", {
-        Text = "Enable Logs",
+        Text = "Actitivty Logs",
         Default = false,
+        Tooltip = "Leave and join logs",
         Callback = function(enabled)
             if enabled then
                 group:AddInput("notify_text", {
@@ -602,7 +603,7 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
     hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(Options.spin_speed.Value), 0)
 end))
 
-local tpGroup = extrasTab:AddLeftGroupbox("Teleport to player")
+local tpGroup = extrasTab:AddLeftGroupbox("Teleports")
 
 local function getPlayers()
     local list = {}
@@ -638,7 +639,7 @@ tpGroup:AddInput("PlayerSearchBox", {
     Numeric = false,
     Finished = true,
     Text = "Search Player",
-    Tooltip = "Type the name or display name of a player and press Enter to select them",
+    Tooltip = "Select a player",
     Placeholder = "Enter name or display name",
     Callback = function(value)
         local trimmed = value:lower():gsub("^%s*(.-)%s*$", "%1")
@@ -698,6 +699,24 @@ Players.PlayerRemoving:Connect(function()
     refreshPlayerList()
 end)
 
+local savedPosition 
+
+tpGroup:AddButton("Save position", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        savedPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
+        api:Notify("Position updated.", 2, "Updated saved position.")  
+    end
+end)
+tpGroup:AddButton("Teleport to last saved position", function()
+    if savedPosition then
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = savedPosition
+        end
+    else
+        
+        api:Notify("No saved position", 2, "You have not saved a position yet.")
+    end
+end)
 
 local group = extrasTab:AddRightGroupbox("Character")
 
@@ -765,180 +784,180 @@ function framework:CreateUI()
         table.clear(self.ui)
     end
 
-    self.ui.screenGui = Instance.new("ScreenGui")
-    self.ui.screenGui.Name = "TargetHUD"
-    self.ui.screenGui.ResetOnSpawn = false
-    self.ui.screenGui.Parent = game:GetService("CoreGui")
+self.ui.screenGui = Instance.new("ScreenGui")
+self.ui.screenGui.Name = "TargetHUD"
+self.ui.screenGui.ResetOnSpawn = false
+self.ui.screenGui.Parent = game:GetService("CoreGui")
 
-    self.ui.mainFrame = Instance.new("Frame")
-    self.ui.mainFrame.Size = UDim2.new(0, 320, 0, 160)
-    self.ui.mainFrame.Position = UDim2.new(0.5, -160, 0.8, -80)
-    self.ui.mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-    self.ui.mainFrame.BorderSizePixel = 0
-    self.ui.mainFrame.Visible = false
-    self.ui.mainFrame.Parent = self.ui.screenGui
+self.ui.mainFrame = Instance.new("Frame")
+self.ui.mainFrame.Size = UDim2.new(0, 320, 0, 160)
+self.ui.mainFrame.Position = UDim2.new(0.5, -160, 0.8, -80)
+self.ui.mainFrame.BackgroundColor3 = Color3.fromRGB(20, 35, 40)
+self.ui.mainFrame.BorderSizePixel = 0
+self.ui.mainFrame.Visible = false
+self.ui.mainFrame.Parent = self.ui.screenGui
 
-    local mainCorner = Instance.new("UICorner")
-    mainCorner.CornerRadius = UDim.new(0, 8)
-    mainCorner.Parent = self.ui.mainFrame
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 0)
+mainCorner.Parent = self.ui.mainFrame
 
-    local mainOutline = Instance.new("UIStroke")
-    mainOutline.Color = Color3.fromRGB(40, 40, 50)
-    mainOutline.Thickness = 2
-    mainOutline.Parent = self.ui.mainFrame
+local mainOutline = Instance.new("UIStroke")
+mainOutline.Color = Color3.fromRGB(10, 20, 25)
+mainOutline.Thickness = 2
+mainOutline.Parent = self.ui.mainFrame
 
-    self.ui.avatarFrame = Instance.new("Frame")
-    self.ui.avatarFrame.Size = UDim2.new(0, 64, 0, 64)
-    self.ui.avatarFrame.Position = UDim2.new(0, 12, 0, 12)
-    self.ui.avatarFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-    self.ui.avatarFrame.BorderSizePixel = 0
-    self.ui.avatarFrame.Parent = self.ui.mainFrame
+self.ui.avatarFrame = Instance.new("Frame")
+self.ui.avatarFrame.Size = UDim2.new(0, 64, 0, 64)
+self.ui.avatarFrame.Position = UDim2.new(0, 12, 0, 12)
+self.ui.avatarFrame.BackgroundColor3 = Color3.fromRGB(15, 25, 30)
+self.ui.avatarFrame.BorderSizePixel = 0
+self.ui.avatarFrame.Parent = self.ui.mainFrame
 
-    local avatarCorner = Instance.new("UICorner")
-    avatarCorner.CornerRadius = UDim.new(0, 6)
-    avatarCorner.Parent = self.ui.avatarFrame
+local avatarCorner = Instance.new("UICorner")
+avatarCorner.CornerRadius = UDim.new(0, 6)
+avatarCorner.Parent = self.ui.avatarFrame
 
-    local avatarOutline = Instance.new("UIStroke")
-    avatarOutline.Color = Color3.fromRGB(50, 50, 60)
-    avatarOutline.Thickness = 2
-    avatarOutline.Parent = self.ui.avatarFrame
+local avatarOutline = Instance.new("UIStroke")
+avatarOutline.Color = Color3.fromRGB(20, 40, 50)
+avatarOutline.Thickness = 2
+avatarOutline.Parent = self.ui.avatarFrame
 
-    self.ui.avatarImage = Instance.new("ImageLabel")
-    self.ui.avatarImage.Size = UDim2.new(1, -6, 1, -6)
-    self.ui.avatarImage.Position = UDim2.new(0, 3, 0, 3)
-    self.ui.avatarImage.BackgroundTransparency = 1
-    self.ui.avatarImage.Image = "rbxassetid://0"
-    self.ui.avatarImage.Parent = self.ui.avatarFrame
+self.ui.avatarImage = Instance.new("ImageLabel")
+self.ui.avatarImage.Size = UDim2.new(1, -6, 1, -6)
+self.ui.avatarImage.Position = UDim2.new(0, 3, 0, 3)
+self.ui.avatarImage.BackgroundTransparency = 1
+self.ui.avatarImage.Image = "rbxassetid://0"
+self.ui.avatarImage.Parent = self.ui.avatarFrame
 
-    self.ui.textContainer = Instance.new("Frame")
-    self.ui.textContainer.Size = UDim2.new(0, 220, 0, 90)
-    self.ui.textContainer.Position = UDim2.new(0, 88, 0, 12)
-    self.ui.textContainer.BackgroundTransparency = 1
-    self.ui.textContainer.Parent = self.ui.mainFrame
+self.ui.textContainer = Instance.new("Frame")
+self.ui.textContainer.Size = UDim2.new(0, 220, 0, 90)
+self.ui.textContainer.Position = UDim2.new(0, 88, 0, 12)
+self.ui.textContainer.BackgroundTransparency = 1
+self.ui.textContainer.Parent = self.ui.mainFrame
 
-    self.ui.nameLabel = Instance.new("TextLabel")
-    self.ui.nameLabel.Size = UDim2.new(1, -4, 0, 24)
-    self.ui.nameLabel.Font = Enum.Font.GothamBold 
-    self.ui.nameLabel.TextSize = 18
-    self.ui.nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    self.ui.nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-    self.ui.nameLabel.BackgroundTransparency = 1
-    self.ui.nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-    self.ui.nameLabel.Parent = self.ui.textContainer
+self.ui.nameLabel = Instance.new("TextLabel")
+self.ui.nameLabel.Size = UDim2.new(1, -4, 0, 24)
+self.ui.nameLabel.Font = Enum.Font.GothamBold
+self.ui.nameLabel.TextSize = 18
+self.ui.nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+self.ui.nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+self.ui.nameLabel.BackgroundTransparency = 1
+self.ui.nameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+self.ui.nameLabel.Parent = self.ui.textContainer
 
-    local nameOutline = Instance.new("UIStroke")
-    nameOutline.Color = Color3.fromRGB(0, 0, 0)
-    nameOutline.Thickness = 1
-    nameOutline.Parent = self.ui.nameLabel
+local nameOutline = Instance.new("UIStroke")
+nameOutline.Color = Color3.fromRGB(0, 0, 0)
+nameOutline.Thickness = 1
+nameOutline.Parent = self.ui.nameLabel
 
-    self.ui.usernameLabel = Instance.new("TextLabel")
-    self.ui.usernameLabel.Size = UDim2.new(1, -4, 0, 20)
-    self.ui.usernameLabel.Position = UDim2.new(0, 0, 0, 26)
-    self.ui.usernameLabel.Font = Enum.Font.GothamBold 
-    self.ui.usernameLabel.TextSize = 14
-    self.ui.usernameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    self.ui.usernameLabel.TextXAlignment = Enum.TextXAlignment.Left
-    self.ui.usernameLabel.BackgroundTransparency = 1
-    self.ui.usernameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-    self.ui.usernameLabel.Parent = self.ui.textContainer
+self.ui.usernameLabel = Instance.new("TextLabel")
+self.ui.usernameLabel.Size = UDim2.new(1, -4, 0, 20)
+self.ui.usernameLabel.Position = UDim2.new(0, 0, 0, 26)
+self.ui.usernameLabel.Font = Enum.Font.GothamBold
+self.ui.usernameLabel.TextSize = 14
+self.ui.usernameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+self.ui.usernameLabel.TextXAlignment = Enum.TextXAlignment.Left
+self.ui.usernameLabel.BackgroundTransparency = 1
+self.ui.usernameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+self.ui.usernameLabel.Parent = self.ui.textContainer
 
-    local userOutline = Instance.new("UIStroke")
-    userOutline.Color = Color3.fromRGB(0, 0, 0)
-    userOutline.Thickness = 1
-    userOutline.Transparency = 0.5
-    userOutline.Parent = self.ui.usernameLabel
+local userOutline = Instance.new("UIStroke")
+userOutline.Color = Color3.fromRGB(0, 0, 0)
+userOutline.Thickness = 1
+userOutline.Transparency = 0.5
+userOutline.Parent = self.ui.usernameLabel
 
-    self.ui.healthContainer = Instance.new("Frame")
-    self.ui.healthContainer.Size = UDim2.new(1, -24, 0, 24)
-    self.ui.healthContainer.Position = UDim2.new(0, 12, 0, 104)
-    self.ui.healthContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
-    self.ui.healthContainer.Parent = self.ui.mainFrame
+self.ui.toolLabel = Instance.new("TextLabel")
+self.ui.toolLabel.Size = UDim2.new(1, -24, 0, 18)
+self.ui.toolLabel.Position = UDim2.new(0, 12, 0, 84)
+self.ui.toolLabel.Font = Enum.Font.GothamBold
+self.ui.toolLabel.TextSize = 12
+self.ui.toolLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+self.ui.toolLabel.TextXAlignment = Enum.TextXAlignment.Left
+self.ui.toolLabel.BackgroundTransparency = 1
+self.ui.toolLabel.TextTruncate = Enum.TextTruncate.AtEnd
+self.ui.toolLabel.Text = "Tool: None"
+self.ui.toolLabel.Parent = self.ui.mainFrame
 
-    local healthContainerCorner = Instance.new("UICorner")
-    healthContainerCorner.CornerRadius = UDim.new(0, 4)
-    healthContainerCorner.Parent = self.ui.healthContainer
+self.ui.healthContainer = Instance.new("Frame")
+self.ui.healthContainer.Size = UDim2.new(1, -24, 0, 24)
+self.ui.healthContainer.Position = UDim2.new(0, 12, 0, 104)
+self.ui.healthContainer.BackgroundColor3 = Color3.fromRGB(15, 25, 30)
+self.ui.healthContainer.Parent = self.ui.mainFrame
 
-    local healthContainerOutline = Instance.new("UIStroke")
-    healthContainerOutline.Color = Color3.fromRGB(40, 40, 50)
-    healthContainerOutline.Thickness = 1
-    healthContainerOutline.Parent = self.ui.healthContainer
+local healthContainerCorner = Instance.new("UICorner")
+healthContainerCorner.CornerRadius = UDim.new(0, 4)
+healthContainerCorner.Parent = self.ui.healthContainer
 
-    self.ui.healthBar = Instance.new("Frame")
-    self.ui.healthBar.Size = UDim2.new(0, 0, 1, 0)
-    self.ui.healthBar.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
-    self.ui.healthBar.BorderSizePixel = 0
-    self.ui.healthBar.Parent = self.ui.healthContainer
+local healthContainerOutline = Instance.new("UIStroke")
+healthContainerOutline.Color = Color3.fromRGB(30, 50, 60)
+healthContainerOutline.Thickness = 1
+healthContainerOutline.Parent = self.ui.healthContainer
 
-    local healthBarCorner = Instance.new("UICorner")
-    healthBarCorner.CornerRadius = UDim.new(0, 4)
-    healthBarCorner.Parent = self.ui.healthBar
+self.ui.healthBar = Instance.new("Frame")
+self.ui.healthBar.Size = UDim2.new(0, 0, 1, 0)
+self.ui.healthBar.BackgroundColor3 = Color3.fromRGB(200, 40, 40)
+self.ui.healthBar.BorderSizePixel = 0
+self.ui.healthBar.Parent = self.ui.healthContainer
 
-    local healthBarOutline = Instance.new("UIStroke")
-    healthBarOutline.Color = Color3.fromRGB(0, 150, 0)
-    healthBarOutline.Thickness = 1
-    healthBarOutline.Parent = self.ui.healthBar
+local healthBarCorner = Instance.new("UICorner")
+healthBarCorner.CornerRadius = UDim.new(0, 4)
+healthBarCorner.Parent = self.ui.healthBar
 
-    self.ui.healthText = Instance.new("TextLabel")
-    self.ui.healthText.Size = UDim2.new(1, 0, 1, 0)
-    self.ui.healthText.Font = Enum.Font.GothamBold 
-    self.ui.healthText.TextSize = 12
-    self.ui.healthText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    self.ui.healthText.BackgroundTransparency = 1
-    self.ui.healthText.TextXAlignment = Enum.TextXAlignment.Center
-    self.ui.healthText.TextYAlignment = Enum.TextYAlignment.Center
-    self.ui.healthText.Parent = self.ui.healthContainer
+local healthBarOutline = Instance.new("UIStroke")
+healthBarOutline.Color = Color3.fromRGB(120, 20, 20)
+healthBarOutline.Thickness = 1
+healthBarOutline.Parent = self.ui.healthBar
 
-    self.ui.armorContainer = Instance.new("Frame")
-    self.ui.armorContainer.Size = UDim2.new(1, -24, 0, 24)
-    self.ui.armorContainer.Position = UDim2.new(0, 12, 0, 132)
-    self.ui.armorContainer.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
-    self.ui.armorContainer.Parent = self.ui.mainFrame
+self.ui.healthText = Instance.new("TextLabel")
+self.ui.healthText.Size = UDim2.new(1, 0, 1, 0)
+self.ui.healthText.Font = Enum.Font.GothamBold
+self.ui.healthText.TextSize = 12
+self.ui.healthText.TextColor3 = Color3.fromRGB(255, 255, 255)
+self.ui.healthText.BackgroundTransparency = 1
+self.ui.healthText.TextXAlignment = Enum.TextXAlignment.Center
+self.ui.healthText.TextYAlignment = Enum.TextYAlignment.Center
+self.ui.healthText.Parent = self.ui.healthContainer
 
-    local armorContainerCorner = Instance.new("UICorner")
-    armorContainerCorner.CornerRadius = UDim.new(0, 4)
-    armorContainerCorner.Parent = self.ui.armorContainer
+self.ui.armorContainer = Instance.new("Frame")
+self.ui.armorContainer.Size = UDim2.new(1, -24, 0, 24)
+self.ui.armorContainer.Position = UDim2.new(0, 12, 0, 132)
+self.ui.armorContainer.BackgroundColor3 = Color3.fromRGB(15, 25, 30)
+self.ui.armorContainer.Parent = self.ui.mainFrame
 
-    local armorContainerOutline = Instance.new("UIStroke")
-    armorContainerOutline.Color = Color3.fromRGB(40, 40, 50)
-    armorContainerOutline.Thickness = 1
-    armorContainerOutline.Parent = self.ui.armorContainer
+local armorContainerCorner = Instance.new("UICorner")
+armorContainerCorner.CornerRadius = UDim.new(0, 4)
+armorContainerCorner.Parent = self.ui.armorContainer
 
-    self.ui.armorBar = Instance.new("Frame")
-    self.ui.armorBar.Size = UDim2.new(0, 0, 1, 0)
-    self.ui.armorBar.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
-    self.ui.armorBar.BorderSizePixel = 0
-    self.ui.armorBar.Parent = self.ui.armorContainer
+local armorContainerOutline = Instance.new("UIStroke")
+armorContainerOutline.Color = Color3.fromRGB(30, 50, 60)
+armorContainerOutline.Thickness = 1
+armorContainerOutline.Parent = self.ui.armorContainer
 
-    local armorBarCorner = Instance.new("UICorner")
-    armorBarCorner.CornerRadius = UDim.new(0, 4)
-    armorBarCorner.Parent = self.ui.armorBar
+self.ui.armorBar = Instance.new("Frame")
+self.ui.armorBar.Size = UDim2.new(0, 0, 1, 0)
+self.ui.armorBar.BackgroundColor3 = Color3.fromRGB(0, 100, 130)
+self.ui.armorBar.BorderSizePixel = 0
+self.ui.armorBar.Parent = self.ui.armorContainer
 
-    local armorBarOutline = Instance.new("UIStroke")
-    armorBarOutline.Color = Color3.fromRGB(0, 75, 200)
-    armorBarOutline.Thickness = 1
-    armorBarOutline.Parent = self.ui.armorBar
+local armorBarCorner = Instance.new("UICorner")
+armorBarCorner.CornerRadius = UDim.new(0, 4)
+armorBarCorner.Parent = self.ui.armorBar
 
-    self.ui.armorText = Instance.new("TextLabel")
-    self.ui.armorText.Size = UDim2.new(1, 0, 1, 0)
-    self.ui.armorText.Font = Enum.Font.GothamBold
-    self.ui.armorText.TextSize = 12
-    self.ui.armorText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    self.ui.armorText.BackgroundTransparency = 1
-    self.ui.armorText.TextXAlignment = Enum.TextXAlignment.Center
-    self.ui.armorText.TextYAlignment = Enum.TextYAlignment.Center
-    self.ui.armorText.Parent = self.ui.armorContainer
+local armorBarOutline = Instance.new("UIStroke")
+armorBarOutline.Color = Color3.fromRGB(0, 75, 100)
+armorBarOutline.Thickness = 1
+armorBarOutline.Parent = self.ui.armorBar
 
-    self.ui.toolLabel = Instance.new("TextLabel")
-    self.ui.toolLabel.Size = UDim2.new(1, -24, 0, 18)
-    self.ui.toolLabel.Position = UDim2.new(0, 12, 0, 84)
-    self.ui.toolLabel.Font = Enum.Font.GothamBold 
-    self.ui.toolLabel.TextSize = 12
-    self.ui.toolLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    self.ui.toolLabel.TextXAlignment = Enum.TextXAlignment.Left
-    self.ui.toolLabel.BackgroundTransparency = 1
-    self.ui.toolLabel.TextTruncate = Enum.TextTruncate.AtEnd
-    self.ui.toolLabel.Text = "Tool: None"
-    self.ui.toolLabel.Parent = self.ui.mainFrame
+self.ui.armorText = Instance.new("TextLabel")
+self.ui.armorText.Size = UDim2.new(1, 0, 1, 0)
+self.ui.armorText.Font = Enum.Font.GothamBold
+self.ui.armorText.TextSize = 12
+self.ui.armorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+self.ui.armorText.BackgroundTransparency = 1
+self.ui.armorText.TextXAlignment = Enum.TextXAlignment.Center
+self.ui.armorText.TextYAlignment = Enum.TextYAlignment.Center
+self.ui.armorText.Parent = self.ui.armorContainer
 end
 
 function framework:GetEquippedTool(target)
@@ -2369,9 +2388,8 @@ do
     
     infoGroup:AddLabel(
         'you can multi tool with AUG, Double barrel, rifle and flintlock\n' ..
-        'if you want a custom version of multi tool like additional weapons ect just dm me @gutsbiggestfan\n' ..
-        'not guts anymore\n' ..
         'discord banned my ass again\n' ..
+        'not guts anymore\n' ..
         'if you HAVENT seen target HUD causes fps drops if your device isnt good enough', true
     )
 end
