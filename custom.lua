@@ -26,7 +26,7 @@ do
     local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
     
     creditsGroup:AddLabel(
-        'Script by: gutsbiggestfan\n' ..
+        'Script by: d6jrz\n' ..
         'Contributors: envert, zpql, kiralyom\n' ..
         'Testers: vibin_vibing, 109theone, vinni300\n' ..
         'I DID make this with love ❤❤', true
@@ -42,7 +42,7 @@ do
     '[+] teleport to saved position\n' ..
     '[+] copy join server script\n' ..
     '[~] lowkey priv9 target hud 🤤🤤\n' ..
-	'Find any bugs? dm me. Have any suggestions? @gutsbiggestfan on discord', true
+	'Find any bugs? dm me. Have any suggestions? @d6jrz on discord', true
     )
 end
 
@@ -2400,8 +2400,7 @@ do
     
     infoGroup:AddLabel(
         'you can multi tool with AUG, Double barrel, rifle and flintlock\n' ..
-        'discord banned my ass again\n' ..
-        'not guts anymore\n' ..
+        'im suspended for the 3rd time\n' ..
         'if you HAVENT seen target HUD causes fps drops if your device isnt good enough', true
     )
 end
