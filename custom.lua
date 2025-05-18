@@ -38,10 +38,7 @@ do
     
     updatesGroup:AddLabel(
         'Update logs:\n' ..
-	'[+] save position\n' ..
-    '[+] teleport to saved position\n' ..
-    '[+] copy join server script\n' ..
-    '[~] lowkey priv9 target hud 🤤🤤\n' ..
+	'[+] cash aura\n' ..
 	'Find any bugs? dm me. Have any suggestions? @d6jrz on discord', true
     )
 end
@@ -240,6 +237,36 @@ miscGroup:AddButton("Copy join link", function()
     
     api:Notify("Copied server join script", 3);
 end)
+
+miscGroup:AddButton("Cash aura", function()
+    local auraActive = true
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local hrp = character:WaitForChild("HumanoidRootPart")
+
+    local function cashAuraLoop()
+        while auraActive do
+            local dropFolder = workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("Drop")
+            if dropFolder then
+                for _, moneyDrop in pairs(dropFolder:GetChildren()) do
+                    if moneyDrop:IsA("Part") and moneyDrop.Name == "MoneyDrop" then
+                        local distance = (hrp.Position - moneyDrop.Position).Magnitude
+                        if distance <= 10 then 
+                            local clickDetector = moneyDrop:FindFirstChildOfClass("ClickDetector")
+                            if clickDetector then
+                                fireclickdetector(clickDetector)
+                            end
+                        end
+                    end
+                end
+            end
+            task.wait(0.2)
+        end
+    end
+
+    task.spawn(cashAuraLoop)
+end)
+
 do
     local group = extrasTab:AddLeftGroupbox("Troll")
 
@@ -2436,6 +2463,13 @@ function api:Unload()
     framework.antiRpgActive = false
     framework.isHoldingKey = false
 
+    if auraActive then
+        auraActive = false 
+        if cashAuraLoop then
+            task.cancel(cashAuraLoop)  
+        end
+    end
+
     if LocalPlayer.Character then
         local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
         if humanoid then
@@ -2450,7 +2484,7 @@ function api:Unload()
     isShooting = false
     table.clear(framework.equippedTools)
     table.clear(lastFiredTimes)
-    
+
     if framework.antiFlingActive then
         for player, parts in pairs(originalCollisions) do
             if player and player.Character then
@@ -2465,6 +2499,7 @@ function api:Unload()
         table.clear(originalCollisions)
     end
 end
+
 pcall(framework.Init, framework)
 
 return framework
