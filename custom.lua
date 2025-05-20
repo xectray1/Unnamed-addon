@@ -23,48 +23,50 @@ local framework = {
 local extrasTab = api:AddTab("extras")
 
 do
-    local creditsGroup = extrasTab:AddLeftGroupbox("Credits")
+    local creditsGroup = extrasTab:AddLeftGroupbox("credits")
     
     creditsGroup:AddLabel(
-        'Script by: d6jrz\n' ..
-        'Contributors: envert, zpql, kiralyom\n' ..
-        'Testers: vibin_vibing, 109theone, vinni300\n' ..
-        'I DID make this with love ❤❤', true
+        'script by: d6jrz\n' ..
+        'contributors: envert, zpql, kiralyom\n' ..
+        'testers: vibin_vibing, 109theone, vinni300', true
     )
 end
 
 do
-    local updatesGroup = extrasTab:AddRightGroupbox("Update logs")
+    local updatesGroup = extrasTab:AddRightGroupbox("update logs")
     
     updatesGroup:AddLabel(
         'Update logs:\n' ..
-	'[+] cash aura\n' ..
-	'Find any bugs? dm me. Have any suggestions? @d6jrz on discord', true
+	'[-] teleport to player (because rem made it useless)\n' ..
+    '[-] info tab because its useless aswell\n' ..
+    '[~] loading lua no longer says target hud initalized\n' ..
+    '[~] organised label sections to be cleaner\n' ..
+	'find any bugs? dm me. have any suggestions? @d6jrz on discord', true
     )
 end
 
 do
-    local group = extrasTab:AddLeftGroupbox("Voice Chat")
+    local group = extrasTab:AddLeftGroupbox("voice chat")
 
-    group:AddButton("Reconnect VC", function()
+    group:AddButton("vc unban", function()
         local success, err = pcall(function()
             game:GetService("VoiceChatService"):joinVoice()
         end)
-        api:Notify(success and "Reconnected to VC" or ("VC Failed: " .. tostring(err)), 2)
+        api:Notify(success and "reconnected to vc" or ("vc failed: " .. tostring(err)), 2)
     end)
 
-    group:AddButton("Rejoin Server", function()
+    group:AddButton("rejoin server", function()
         local success, err = pcall(function()
             TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
         end)
-        api:Notify(success and "Rejoining server..." or ("Failed: " .. tostring(err)), 2)
+        api:Notify(success and "rejoining server..." or ("failed: " .. tostring(err)), 2)
     end)
 end
 
-local miscGroup = extrasTab:AddLeftGroupbox("Misc")
+local miscGroup = extrasTab:AddLeftGroupbox("misc")
 
 local silentBlockToggle = miscGroup:AddToggle("god_block", {
-    Text = "God Block",
+    Text = "god block",
     Default = true,
 })
 
@@ -92,7 +94,7 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
 end))
 
 local antiSitToggle = miscGroup:AddToggle("anti_sit", {
-    Text = "Anti-Sit",
+    Text = "anti sit",
     Default = true,
 })
 
@@ -131,9 +133,9 @@ do
     local joinConn, leaveConn = nil, nil
 
     group:AddToggle("logs_toggle", {
-        Text = "Actitivty Logs",
+        Text = "actitivty logs",
         Default = false,
-        Tooltip = "Leave and join logs",
+        Tooltip = "leave and join logs",
         Callback = function(enabled)
             if enabled then
                 group:AddInput("notify_text", {
@@ -167,17 +169,17 @@ do
 end
 
 miscGroup:AddToggle("anti_fling", {
-    Text = "Anti-Fling",
+    Text = "anti fling",
     Default = false,
 })
 
-miscGroup:AddButton("Force Reset", function()
+miscGroup:AddButton("force reset", function()
     local char = LocalPlayer.Character
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")
         if hum then hum.Health = 0 end
     end
-    api:Notify("Character reset", 2)
+    api:Notify("character reset", 2)
 end)
 
 local originalCollisions = {}
@@ -226,7 +228,7 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
     end
 end))
 
-miscGroup:AddButton("Copy join link", function()
+miscGroup:AddButton("copy join link", function()
     local placeId = game.PlaceId  
     local serverId = game.JobId  
     
@@ -235,10 +237,10 @@ miscGroup:AddButton("Copy join link", function()
     
     setclipboard(joinScript)
     
-    api:Notify("Copied server join script", 3);
+    api:Notify("copied server join script", 3);
 end)
 
-miscGroup:AddButton("Cash aura", function()
+miscGroup:AddButton("cash aura", function()
     local auraActive = true
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -268,7 +270,7 @@ miscGroup:AddButton("Cash aura", function()
 end)
 
 do
-    local group = extrasTab:AddLeftGroupbox("Troll")
+    local group = extrasTab:AddLeftGroupbox("troll")
 
     local jerkTool = nil
     local respawnConnection = nil
@@ -350,7 +352,7 @@ do
     end
 
     group:AddToggle("jerk_toggle", {
-        Text = "Jerk Tool",
+        Text = "jerk tool",
         Default = false,
         Callback = function(state)
             if state then createTool() else removeTool() end
@@ -400,7 +402,7 @@ do
 
     local enabled = false
 
-    group:AddToggle("autotrash_e", { Text = "Trash Talk", Default = false }):OnChanged(function(v)
+    group:AddToggle("autotrash_e", { Text = "trash talk", Default = false }):OnChanged(function(v)
         enabled = v
     end)
 
@@ -424,7 +426,7 @@ do
     end))
 
    group:AddToggle("anti_rpg", {
-        Text = "Anti RPG",
+        Text = "anti rpg",
         Default = true,
     }):OnChanged(function(v)
         framework.antiRpgActive = v
@@ -485,15 +487,15 @@ do
 end
 
 do
-    local group = extrasTab:AddRightGroupbox("Inventory Sorter")
+    local group = extrasTab:AddRightGroupbox("inventory sorter")
 
-    group:AddToggle("sort_toggle", { Text = "Enable Sorter", Default = false })
+    group:AddToggle("sort_toggle", { Text = "enable sorter", Default = false })
 
-    group:AddLabel("Press to sort")
+    group:AddLabel("press to sort")
         :AddKeyPicker("sort_keybind", {
             Default = "I",
             Mode = "Hold",
-            Text = "Sort Inventory Key",
+            Text = "Sort Inventory",
             NoUI = false
         })
 
@@ -513,7 +515,7 @@ do
             Values = weaponOptions,
             Default = 1,
             Multi = false,
-            Text = "Slot " .. i
+            Text = "slot " .. i
         })
     end
 
@@ -584,21 +586,89 @@ do
     end)
 end
 
-local spinGroup = extrasTab:AddLeftGroupbox("Character Spin")
-spinGroup:AddToggle("char_spin", { Text = "Character Spin", Default = true })
+local tpGroup = extrasTab:AddLeftGroupbox("Teleports")
+local lastDeathPosition = nil
+local savedPosition
 
-spinGroup:AddSlider("spin_speed", {
-    Text = "Spin Speed",
+tpGroup:AddButton("save position", function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        savedPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
+        api:Notify("position updated.", 2)
+    end
+end)
+
+tpGroup:AddButton("teleport to last saved position", function()
+    if savedPosition then
+        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            LocalPlayer.Character.HumanoidRootPart.CFrame = savedPosition
+        end
+    else
+        api:Notify("no saved position", 2)
+    end
+end)
+
+tpGroup:AddButton("flashback", function()
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if hrp and lastDeathPosition then
+        hrp.CFrame = CFrame.new(lastDeathPosition + Vector3.new(0, 5, 0))
+    end
+end)
+
+local group = extrasTab:AddRightGroupbox("character")
+
+group:AddToggle("no_jump_cd", {
+    Text = "no jump Cooldown",
+    Default = false
+})
+
+table.insert(framework.connections, RunService.Heartbeat:Connect(function()
+    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if Toggles.no_jump_cd and Toggles.no_jump_cd.Value then
+            if hum.UseJumpPower ~= false then
+                hum.UseJumpPower = false 
+            end
+        else
+            if hum.UseJumpPower ~= true then
+                hum.UseJumpPower = true 
+            end
+        end
+    end
+end))
+
+local function trackCharacter(char)
+    local hum = char:WaitForChild("Humanoid")
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    hum.StateChanged:Connect(function(_, newState)
+        if newState == Enum.HumanoidStateType.Dead and hrp then
+            lastDeathPosition = hrp.Position
+        end
+    end)
+end
+
+if LocalPlayer.Character then
+    trackCharacter(LocalPlayer.Character)
+end
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    trackCharacter(char)
+end)
+
+group:AddToggle("char_spin", { Text = "character spin", Default = true })
+
+group:AddSlider("spin_speed", {
+    Text = "spin Speed",
     Default = 50,
     Min = 1,
     Max = 50,
     Rounding = 0
 })
 
-spinGroup:AddLabel("Toggle Key"):AddKeyPicker("char_spin_keybind", {
+group:AddLabel("toggle Key"):AddKeyPicker("char_spin_keybind", {
     Default = "LeftAlt",
     Mode = "Toggle",
-    Text = "Character Spin",
+    Text = "character spin",
     NoUI = false,
     Callback = function()
         local mode = Options.char_spin_keybind.Mode
@@ -642,174 +712,16 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
     hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(Options.spin_speed.Value), 0)
 end))
 
-local tpGroup = extrasTab:AddLeftGroupbox("Teleports")
-
-local function getPlayers()
-    local list = {}
-    for _, p in ipairs(Players:GetPlayers()) do
-        if p ~= LocalPlayer then
-            table.insert(list, p.Name)
-        end
-    end
-    return list
-end
-
-local selectedPlayer, originalPosition
-local searchResultLabel
-
-local playerDropdown = tpGroup:AddDropdown("PlayerDropdown", {
-    Values = getPlayers(),
-    Default = 1,
-    Multi = false,
-    Text = "Select Player",
-    Tooltip = "Select a player to teleport to",
-    Callback = function(v)
-        selectedPlayer = v
-        if searchResultLabel then
-            searchResultLabel:SetText("Selected: " .. selectedPlayer)
-        end
-    end
-})
-
-searchResultLabel = tpGroup:AddLabel("Selected: None")
-
-tpGroup:AddInput("PlayerSearchBox", {
-    Default = "",
-    Numeric = false,
-    Finished = true,
-    Text = "Search Player",
-    Tooltip = "Select a player",
-    Placeholder = "Enter name or display name",
-    Callback = function(value)
-        local trimmed = value:lower():gsub("^%s*(.-)%s*$", "%1")
-        local match = nil
-
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p ~= LocalPlayer then
-                local displayName = p.DisplayName:lower()
-                local username = p.Name:lower()
-
-                if displayName:sub(1, #trimmed) == trimmed or username:sub(1, #trimmed) == trimmed then
-                    match = p.Name 
-                    break
-                end
-            end
-        end
-
-        if match then
-            selectedPlayer = match
-            searchResultLabel:SetText("Selected: " .. selectedPlayer)
-        else
-            selectedPlayer = nil
-            searchResultLabel:SetText("Selected: No match")
-        end
-    end
-})
-
-tpGroup:AddButton("Teleport", function()
-    local target = Players:FindFirstChild(selectedPlayer)
-    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-        originalPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
-        LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character.HumanoidRootPart.CFrame
-    end
-end)
-
-tpGroup:AddButton("Teleport Back", function()
-    if originalPosition then
-        LocalPlayer.Character.HumanoidRootPart.CFrame = originalPosition
-    end
-end)
-
-local function refreshPlayerList()
-    local playerList = getPlayers()
-    if playerDropdown then
-        playerDropdown.Values = playerList
-        playerDropdown:SetValues(playerList)
-    end
-end
-
-Players.PlayerAdded:Connect(function()
-    task.wait(0.1)
-    refreshPlayerList()
-end)
-
-Players.PlayerRemoving:Connect(function()
-    task.wait(0.1)
-    refreshPlayerList()
-end)
-
-local savedPosition 
-
-tpGroup:AddButton("Save position", function()
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        savedPosition = LocalPlayer.Character.HumanoidRootPart.CFrame
-        api:Notify("Position updated.", 2, "Updated saved position.")  
-    end
-end)
-tpGroup:AddButton("Teleport to last saved position", function()
-    if savedPosition then
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            LocalPlayer.Character.HumanoidRootPart.CFrame = savedPosition
-        end
-    else
-        
-        api:Notify("No saved position", 2, "You have not saved a position yet.")
-    end
-end)
-
-local group = extrasTab:AddRightGroupbox("Character")
-
-group:AddToggle("no_jump_cd", {
-    Text = "No Jump Cooldown",
-    Default = false
-})
-
-table.insert(framework.connections, RunService.Heartbeat:Connect(function()
-    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if hum then
-        if Toggles.no_jump_cd and Toggles.no_jump_cd.Value then
-            if hum.UseJumpPower ~= false then
-                hum.UseJumpPower = false 
-            end
-        else
-            if hum.UseJumpPower ~= true then
-                hum.UseJumpPower = true 
-            end
-        end
-    end
-end))
-
-local lastDeathPosition = nil
-
-local function trackCharacter(char)
-    local hum = char:WaitForChild("Humanoid")
-    local hrp = char:WaitForChild("HumanoidRootPart")
-
-    hum.StateChanged:Connect(function(_, newState)
-        if newState == Enum.HumanoidStateType.Dead and hrp then
-            lastDeathPosition = hrp.Position
-        end
-    end)
-end
-
-if LocalPlayer.Character then
-    trackCharacter(LocalPlayer.Character)
-end
-
-LocalPlayer.CharacterAdded:Connect(function(char)
-    trackCharacter(char)
-end)
-
-local miscGroup = extrasTab:AddLeftGroupbox("Visual Settings")
+local miscGroup = extrasTab:AddLeftGroupbox("visual settings")
 
 framework.elements.enabled = miscGroup:AddToggle("target_hud_enabled", {
-    Text = "Enable Target HUD",
-    Tooltip = "CAUSES FPS DROPS!",
+    Text = "target hud",
+    Tooltip = "fps drops for bad devices",
     Default = false
 })
 
 framework.elements.opacity = miscGroup:AddSlider("target_hud_opacity", {
-    Text = "HUD Opacity",
+    Text = "hud ppacity",
     Default = 100,
     Min = 1,
     Max = 100,
@@ -1087,18 +999,10 @@ function framework:Init()
         table.insert(self.connections, RunService.Heartbeat:Connect(function()
             self:UpdateTarget()
         end))
-        api:Notify("Target HUD initialized", 3)
     end)
 end
 
-group:AddButton("Flashback", function()
-    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if hrp and lastDeathPosition then
-        hrp.CFrame = CFrame.new(lastDeathPosition + Vector3.new(0, 5, 0))
-    end
-end)
-
-group:AddButton("Animation pack", function()
+group:AddButton("animation pack", function()
 
     repeat
         wait()
@@ -1264,7 +1168,7 @@ group:AddButton("Animation pack", function()
 
 end)
 
-group:AddButton("R6 Force", function()
+group:AddButton("r6 force", function()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
 
@@ -2096,7 +2000,7 @@ function RunCustomAnimation(Char)
 	end)
 end
 
-local multiToolGroup = extrasTab:AddRightGroupbox("Multi tool")
+local multiToolGroup = extrasTab:AddRightGroupbox("multi tool")
 
 if Toggles.gun_auto_ammo then
     Toggles.gun_auto_ammo.Value = false
@@ -2219,9 +2123,8 @@ local function preciseSort()
 end
 
 multiToolGroup:AddToggle("multi_tool_toggle", {
-    Text = "Multi Tool",
+    Text = "multi Tool",
     Default = true,
-    Tooltip = "Enable/disable multi tool globally.",
     Callback = function()
         local toggle = Toggles.multi_tool_toggle
         if not toggle then return end
@@ -2238,7 +2141,7 @@ multiToolGroup:AddToggle("multi_tool_toggle", {
 multiToolGroup:AddLabel("Toggle Key"):AddKeyPicker("char_multi_tool_keybind", {
     Default = "L",
     Mode = "Toggle",
-    Text = "Multi Tool",
+    Text = "multi Tool",
     NoUI = false,
     Callback = function()
         local keybind = Options.char_multi_tool_keybind
@@ -2419,18 +2322,6 @@ table.insert(framework.connections, game:GetService("UserInputService").InputBeg
         startAutoShooting()
     end
 end))
-
-local infoTab = api:AddTab("info")
-
-do
-    local infoGroup = infoTab:AddLeftGroupbox("Info")
-    
-    infoGroup:AddLabel(
-        'you can multi tool with AUG, Double barrel, rifle and flintlock\n' ..
-        'im suspended for the 3rd time\n' ..
-        'if you HAVENT seen target HUD causes fps drops if your device isnt good enough', true
-    )
-end
 
 function api:Unload()
     for _, connection in pairs(framework.connections) do
