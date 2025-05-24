@@ -37,10 +37,9 @@ do
     
     updatesGroup:AddLabel(
         'Update logs:\n' ..
-	'[-] teleport to player (because rem made it useless)\n' ..
-    '[-] info tab because its useless aswell\n' ..
-    '[~] loading lua no longer says target hud initalized\n' ..
-    '[~] organised label sections to be cleaner\n' ..
+    '[~] spin speed reduced to 30\n' ..
+    '[~] better keybind handling\n' ..
+    '[~] cash aura is now a toggle\n' ..
 	'find any bugs? dm me. have any suggestions? @d6jrz on discord', true
     )
 end
@@ -126,6 +125,48 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
         humanoid:SetStateEnabled(Enum.HumanoidStateType.Seated, true)
     end
 end))
+
+local auraActive = false
+
+local function cashAuraLoop()
+    while auraActive do
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local hrp = character:WaitForChild("HumanoidRootPart")
+
+        local dropFolder = workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("Drop")
+        if dropFolder then
+            for _, moneyDrop in pairs(dropFolder:GetChildren()) do
+                if moneyDrop:IsA("Part") and moneyDrop.Name == "MoneyDrop" then
+                    local distance = (hrp.Position - moneyDrop.Position).Magnitude
+                    if distance <= 10 then
+                        local clickDetector = moneyDrop:FindFirstChildOfClass("ClickDetector")
+                        if clickDetector then
+                            fireclickdetector(clickDetector)
+                        end
+                    end
+                end
+            end
+        end
+        task.wait(0.2)
+    end
+end
+
+miscGroup:AddToggle("cash_aura_toggle", {
+    Text = "cash aura",
+    Default = true,
+    Callback = function(state)
+        auraActive = state
+        if state then
+            task.spawn(cashAuraLoop)
+        end
+    end
+})
+
+if Toggles.cash_aura_toggle and Toggles.cash_aura_toggle.Value then
+    auraActive = true
+    task.spawn(cashAuraLoop)
+end
 
 do
     local group = miscGroup 
@@ -238,35 +279,6 @@ miscGroup:AddButton("copy join link", function()
     setclipboard(joinScript)
     
     api:Notify("copied server join script", 3);
-end)
-
-miscGroup:AddButton("cash aura", function()
-    local auraActive = true
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-
-    local function cashAuraLoop()
-        while auraActive do
-            local dropFolder = workspace:FindFirstChild("Ignored") and workspace.Ignored:FindFirstChild("Drop")
-            if dropFolder then
-                for _, moneyDrop in pairs(dropFolder:GetChildren()) do
-                    if moneyDrop:IsA("Part") and moneyDrop.Name == "MoneyDrop" then
-                        local distance = (hrp.Position - moneyDrop.Position).Magnitude
-                        if distance <= 10 then 
-                            local clickDetector = moneyDrop:FindFirstChildOfClass("ClickDetector")
-                            if clickDetector then
-                                fireclickdetector(clickDetector)
-                            end
-                        end
-                    end
-                end
-            end
-            task.wait(0.2)
-        end
-    end
-
-    task.spawn(cashAuraLoop)
 end)
 
 do
@@ -489,15 +501,29 @@ end
 do
     local group = extrasTab:AddRightGroupbox("inventory sorter")
 
-    group:AddToggle("sort_toggle", { Text = "enable sorter", Default = false })
+    group:AddToggle("sort_toggle", {
+    Text = "enable sorter",
+    Default = false,
+    Callback = function()
+        local toggle = Toggles.sort_toggle
+        if not toggle then return end
 
-    group:AddLabel("press to sort")
-        :AddKeyPicker("sort_keybind", {
-            Default = "I",
-            Mode = "Hold",
-            Text = "Sort Inventory",
-            NoUI = false
-        })
+        local keybind = Options.sort_keybind
+        if keybind then
+            keybind.NoUI = not toggle.Value
+        end
+    end
+})
+
+group:AddLabel("press to sort")
+    :AddKeyPicker("sort_keybind", {
+        Default = "I",
+        Mode = "Hold",
+        Text = "sort inventory",
+        NoUI = false
+    })
+
+Options.sort_keybind.NoUI = true
 
     local weaponOptions = {
         "(Empty)",
@@ -586,7 +612,7 @@ do
     end)
 end
 
-local tpGroup = extrasTab:AddLeftGroupbox("Teleports")
+local tpGroup = extrasTab:AddLeftGroupbox("teleports")
 local lastDeathPosition = nil
 local savedPosition
 
@@ -616,52 +642,25 @@ end)
 
 local group = extrasTab:AddRightGroupbox("character")
 
-group:AddToggle("no_jump_cd", {
-    Text = "no jump Cooldown",
-    Default = false
-})
+group:AddToggle("char_spin", {
+    Text = "character spin",
+    Default = true,
+    Callback = function()
+        local toggle = Toggles.char_spin
+        if not toggle then return end
 
-table.insert(framework.connections, RunService.Heartbeat:Connect(function()
-    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if hum then
-        if Toggles.no_jump_cd and Toggles.no_jump_cd.Value then
-            if hum.UseJumpPower ~= false then
-                hum.UseJumpPower = false 
-            end
-        else
-            if hum.UseJumpPower ~= true then
-                hum.UseJumpPower = true 
-            end
+        local keybind = Options.char_spin_keybind
+        if keybind then
+            keybind.NoUI = not toggle.Value
         end
     end
-end))
-
-local function trackCharacter(char)
-    local hum = char:WaitForChild("Humanoid")
-    local hrp = char:WaitForChild("HumanoidRootPart")
-
-    hum.StateChanged:Connect(function(_, newState)
-        if newState == Enum.HumanoidStateType.Dead and hrp then
-            lastDeathPosition = hrp.Position
-        end
-    end)
-end
-
-if LocalPlayer.Character then
-    trackCharacter(LocalPlayer.Character)
-end
-
-LocalPlayer.CharacterAdded:Connect(function(char)
-    trackCharacter(char)
-end)
-
-group:AddToggle("char_spin", { Text = "character spin", Default = true })
+})
 
 group:AddSlider("spin_speed", {
     Text = "spin Speed",
-    Default = 50,
+    Default = 30,
     Min = 1,
-    Max = 50,
+    Max = 30,
     Rounding = 0
 })
 
@@ -711,6 +710,45 @@ table.insert(framework.connections, RunService.Heartbeat:Connect(function()
     LocalPlayer.Character.Humanoid.AutoRotate = false
     hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(Options.spin_speed.Value), 0)
 end))
+
+group:AddToggle("no_jump_cd", {
+    Text = "no jump Cooldown",
+    Default = false
+})
+
+table.insert(framework.connections, RunService.Heartbeat:Connect(function()
+    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    if hum then
+        if Toggles.no_jump_cd and Toggles.no_jump_cd.Value then
+            if hum.UseJumpPower ~= false then
+                hum.UseJumpPower = false 
+            end
+        else
+            if hum.UseJumpPower ~= true then
+                hum.UseJumpPower = true 
+            end
+        end
+    end
+end))
+
+local function trackCharacter(char)
+    local hum = char:WaitForChild("Humanoid")
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    hum.StateChanged:Connect(function(_, newState)
+        if newState == Enum.HumanoidStateType.Dead and hrp then
+            lastDeathPosition = hrp.Position
+        end
+    end)
+end
+
+if LocalPlayer.Character then
+    trackCharacter(LocalPlayer.Character)
+end
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    trackCharacter(char)
+end)
 
 local miscGroup = extrasTab:AddLeftGroupbox("visual settings")
 
@@ -2123,7 +2161,7 @@ local function preciseSort()
 end
 
 multiToolGroup:AddToggle("multi_tool_toggle", {
-    Text = "multi Tool",
+    Text = "multi tool",
     Default = true,
     Callback = function()
         local toggle = Toggles.multi_tool_toggle
@@ -2131,9 +2169,14 @@ multiToolGroup:AddToggle("multi_tool_toggle", {
 
         if not (framework.ragebotActive or isRagebotActive()) then
             framework.multiToolActive = toggle.Value
-            else
+        else
             toggle.Value = false
             framework.multiToolActive = false
+        end
+
+        local keybind = Options.char_multi_tool_keybind
+        if keybind then
+            keybind.NoUI = not toggle.Value
         end
     end
 })
@@ -2141,7 +2184,7 @@ multiToolGroup:AddToggle("multi_tool_toggle", {
 multiToolGroup:AddLabel("Toggle Key"):AddKeyPicker("char_multi_tool_keybind", {
     Default = "L",
     Mode = "Toggle",
-    Text = "multi Tool",
+    Text = "multi tool",
     NoUI = false,
     Callback = function()
         local keybind = Options.char_multi_tool_keybind
@@ -2341,10 +2384,27 @@ function api:Unload()
             toggle.Name == "sort_toggle" or
             toggle.Name == "char_spin" or
             toggle.Name == "no_jump_cd" or
-            toggle.Name == "multi_tool_toggle"
+            toggle.Name == "multi_tool_toggle" or
+            toggle.Name == "cash_aura_toggle"
         ) then
             toggle.Value = false
         end
+    end
+
+    if Options.char_spin_keybind then
+        Options.char_spin_keybind.NoUI = true
+    end
+
+    if Options.char_multi_tool_keybind then
+        Options.char_multi_tool_keybind.NoUI = true
+    end
+
+    if Options.sort_keybind then
+        Options.sort_keybind.NoUI = true
+    end
+
+    if auraActive then
+        auraActive = false
     end
 
     framework.multiToolActive = false
@@ -2353,13 +2413,6 @@ function api:Unload()
     framework.antiFlingActive = false
     framework.antiRpgActive = false
     framework.isHoldingKey = false
-
-    if auraActive then
-        auraActive = false 
-        if cashAuraLoop then
-            task.cancel(cashAuraLoop)  
-        end
-    end
 
     if LocalPlayer.Character then
         local humanoid = LocalPlayer.Character:FindFirstChild("Humanoid")
@@ -2390,7 +2443,3 @@ function api:Unload()
         table.clear(originalCollisions)
     end
 end
-
-pcall(framework.Init, framework)
-
-return framework
