@@ -28,7 +28,7 @@ do
     creditsGroup:AddLabel(
         'script by: d6jrz\n' ..
         'contributors: envert, zpql, kiralyom\n' ..
-        'testers: vibin_vibing, 109theone, vinni300', true
+        'testers: vibin_vibing, 109theone', true
     )
 end
 
